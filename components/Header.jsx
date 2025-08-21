@@ -4,18 +4,20 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  ClerkProvider,
-  SignInButton,
-  SignUpButton,
-  SignedIn,
-  SignedOut,
-  UserButton,
-} from "@clerk/nextjs";
+import { SignInButton, SignUpButton, UserButton } from "@clerk/nextjs";
 import { Button } from "./ui/button";
+import { useStoreUser } from "@/hooks/use-Store-User";
+import { BarLoader } from "react-spinners";
+import { Authenticated, Unauthenticated } from "convex/react";
+import { LayoutDashboard } from "lucide-react";
 
 export const Header = () => {
   const path = usePathname();
+  const { isLoading } = useStoreUser();
+
+  if (path.includes("/editor")) {
+    return null; // Hide header on editor pages
+  }
 
   return (
     <header className="fixed top-6 left-1/2 transform -translate-x-1/2 z-50 text-nowrap">
@@ -53,7 +55,7 @@ export const Header = () => {
         )}
 
         <div className="flex items-center gap-3 ml-10 md:ml-20">
-          <SignedOut>
+          <Unauthenticated>
             <SignInButton>
               <Button variant="glass" className="hidden sm:flex">
                 Sign In
@@ -63,16 +65,29 @@ export const Header = () => {
             <SignUpButton>
               <Button variant="primary">Get Started</Button>
             </SignUpButton>
-          </SignedOut>
+          </Unauthenticated>
 
-          <SignedIn>
-            <UserButton appearance={{
-              elements:{
-                avatarBox: "w-8 h-8",
-              }
-            }}/>
-          </SignedIn>
+          <Authenticated>
+            <Link href="/dashboard">
+              <Button variant="glass" className="hidden sm:flex">
+                <LayoutDashboard className="h-4 3-4" />
+                <span className="hidden md:flex">Dashboard</span>
+              </Button>
+            </Link>
+            <UserButton
+              appearance={{
+                elements: {
+                  avatarBox: "w-8 h-8",
+                },
+              }}
+            />
+          </Authenticated>
         </div>
+        {isLoading && (
+          <div className="fixed bottom-0 left-0 w-full z-40 flex justify-center">
+            <BarLoader width={"95%"} color="#06b6d4" />
+          </div>
+        )}
       </div>
     </header>
   );
