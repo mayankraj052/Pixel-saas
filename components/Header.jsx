@@ -69,7 +69,7 @@ export const Header = () => {
 
           <Authenticated>
             <Link href="/dashboard">
-              <Button variant="glass" className="hidden sm:flex">
+              <Button variant="glass">
                 <LayoutDashboard className="h-4 3-4" />
                 <span className="hidden md:flex">Dashboard</span>
               </Button>
